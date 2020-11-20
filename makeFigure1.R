@@ -63,8 +63,8 @@ plot_func = function(slope){
         
 }    
 
-dir.create("figures_tiffs")
-tiff("figures_tiffs/fig1.tiff", units="in", width=15, height=15, res=300)
+dir.create("figures_jpg")
+jpeg("figures_jpg/fig1.jpg", units="in", width=15, height=15, res=300)
 par(mfrow=c(2,2))
 
 #slope=.5

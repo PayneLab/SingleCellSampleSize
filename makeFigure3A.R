@@ -10,8 +10,8 @@ cells_20 = parse_fig3A(20)
 cells_30 = parse_fig3A(30)
 cells_100 = parse_fig3A(100)
 
-dir.create("figures_tiffs")
-tiff("figures_tiffs/fig3A.tiff", units="in", width=8, height=8, res=300)
+dir.create("figures_jpg")
+jpeg("figures_jpg/fig3A.jpg", units="in", width=8, height=8, res=300)
 par(mar=c(6, 6, 6, 6))
 
 plot(cells_7$slope_over_var, cells_7$mean_accuracy,

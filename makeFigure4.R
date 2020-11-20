@@ -5,8 +5,8 @@ require(scales)
 
 myData = read.csv("data/Fig4/fig4A", row.names=1)
 
-dir.create("figures_tiffs")
-tiff("figures_tiffs/fig4A.tiff", units="in", width=8, height=10, res=300)
+dir.create("figures_jpg")
+jpeg("figures_jpg/fig4A.jpg", units="in", width=8, height=10, res=300)
 par(mar=c(6, 6, 6, 6))
 dens <- apply(myData, 2, density)
 plot(NA, xlim=range(-3,3), ylim=range(sapply(dens, "[", "y")), xlab="True S/V - Estimated S/V", ylab="Density",
@@ -22,7 +22,7 @@ full_population = read.csv("data/Fig4/fig4B", row.names=1)
 #drop proteins below 1
 dropped = full_population[full_population$slope/full_population$sd >= 1,]
 
-tiff("figures_tiffs/fig4B.tiff", units="in", width=5, height=5, res=300)
+jpeg("figures_jpg/fig4B.jpg", units="in", width=5, height=5, res=300)
 ggplot(dropped, aes(x = trsv)) +  
   geom_bar(aes(y = (..count..)/200)) + 
   theme_classic()+

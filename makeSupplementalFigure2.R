@@ -9,8 +9,8 @@ library("dplyr")
 source_python("dataParser.py")
 sup2_data = parse_supplemtal2()
 
-dir.create("figures_tiffs")
-tiff("figures_tiffs/supFig2.tiff", units="in", width=8, height=8, res=300)
+dir.create("figures_jpg")
+jpeg("figures_jpg/supFig2.jpg", units="in", width=8, height=8, res=300)
 #Supplemental Figure 2
 sup2_data %>% mutate(Color = ifelse(pval < .05,"red","black")) %>%
 ggplot(aes(x = C10_stdev, y = `abs_C10-SVEC`, color = Color)) +
@@ -21,8 +21,8 @@ ggplot(aes(x = C10_stdev, y = `abs_C10-SVEC`, color = Color)) +
   ylim(0, 1.5)+
   ylab("Fold Change Between Cell Types")+
   xlab("Variation")+
-  theme(axis.title.x = element_text(size=20),
-        axis.title.y = element_text(size=20),
+  theme(axis.title.x = element_text(size=30),
+        axis.title.y = element_text(size=30),
         axis.text.x = element_text(face="bold",
                                    size=14),
         axis.text.y = element_text(face="bold",
