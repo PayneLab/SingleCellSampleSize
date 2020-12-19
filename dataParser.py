@@ -257,10 +257,10 @@ def parse_fig3A(cells):
     slope_var_3 = find_mean_fig3(sv_3, cells, slope_over_var=3)
     slope_var_4 = find_mean_fig3(sv_4, cells, slope_over_var=4)
     slope_var_6 = find_mean_fig3(sv_6, cells, slope_over_var=6)
-    slope_var_10 = find_mean_fig3(sv_10, cells, slope_over_var=10)
+    # slope_var_10 = find_mean_fig3(sv_10, cells, slope_over_var=10)
 
     df = pd.concat([slope_var_0p5,slope_var_1,slope_var_1p5,slope_var_2,slope_var_3,
-                         slope_var_4, slope_var_6, slope_var_10])
+                         slope_var_4, slope_var_6])
     df.reset_index(drop=True, inplace=True)
     return(df)
 
@@ -271,21 +271,26 @@ def parse_fig3B(cells):
 
     sv_0p5 = pd.read_csv("data/Fig3B/slope_var_0p5")
     sv_1 = pd.read_csv("data/Fig3B/slope_var_1")
+    sv_1p5 = pd.read_csv("data/Fig3B/slope_var_1p5")
     sv_2 = pd.read_csv("data/Fig3B/slope_var_2")
+    sv_3 = pd.read_csv("data/Fig3B/slope_var_3")
     sv_4 = pd.read_csv("data/Fig3B/slope_var_4")
     sv_6 = pd.read_csv("data/Fig3B/slope_var_6")
     sv_10 = pd.read_csv("data/Fig3B/slope_var_10")
 
     slope_var_0p5 = find_mean_fig3(sv_0p5, cells, slope_over_var=.5)
     slope_var_1 = find_mean_fig3(sv_1, cells, slope_over_var=1)
+    slope_var_1p5 = find_mean_fig3(sv_1p5, cells, slope_over_var=1.5)
     slope_var_2 = find_mean_fig3(sv_2, cells, slope_over_var=2)
+    slope_var_3 = find_mean_fig3(sv_3, cells, slope_over_var=3)
     slope_var_4 = find_mean_fig3(sv_4, cells, slope_over_var=4)
     slope_var_6 = find_mean_fig3(sv_6, cells, slope_over_var=6)
-    slope_var_10 = find_mean_fig3(sv_10, cells, slope_over_var=10)
+    # slope_var_10 = find_mean_fig3(sv_10, cells, slope_over_var=10)
 
-    df = pd.concat([slope_var_0p5,slope_var_1,slope_var_2,slope_var_4, slope_var_6, slope_var_10])
+    df = pd.concat([slope_var_0p5,slope_var_1,slope_var_1p5,slope_var_2,slope_var_3,slope_var_4, slope_var_6])
     df.reset_index(drop=True, inplace=True)
     return(df)
+
 
 def parse_supplemtal2():
     df = pd.read_csv("data/SupFig2/LungMap72Cell.txt", sep="\t", index_col="Uniprot_ID")
