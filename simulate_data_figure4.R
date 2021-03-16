@@ -5,7 +5,7 @@ library(sp)
 library(rgeos)
 
 ##Figure 4A
-generate_data = function(slope, sd, population_size=1000){
+generate_data = function(slope, sd, population_size=10000){
   "
 Generates a population of data that has specified slope and deviation. The Y intercept is set to 1. 
 It also generates a population of data to be used for showing no increase expression (a flat line). 
@@ -157,7 +157,7 @@ Return:
 approx_sv = function(slope, sd, number_of_cells){
   est_slope = c()
   est_sd = c()
-  population = generate_data(slope=slope, sd=sd, population_size=5000)
+  population = generate_data(slope=slope, sd=sd, population_size=10000)
   for(i in 1:1000){
     #subsample
     sample = subsample(population, number_of_cells=number_of_cells)
@@ -211,7 +211,7 @@ find_for_sample = function(pop, truesv){
   slope = c()
   sd = c()
   trsv = c()
-  for(i in 1:200){
+  for(i in 1:1000){
     #subsample
     sample = subsample(pop, number_of_cells = 30)
     #find slope and sd
@@ -242,128 +242,12 @@ sample2 = find_for_sample(pop2, 2)
 
 
 full_population = data.frame("sd"=c(sample0$sd,sample.5$sd,sample1$sd,sample1.5$sd,sample2$sd),
-
+                             
                              'slope'=c(sample0$slope,sample.5$slope, sample1$slope,sample1.5$slope,sample2$slope),
-
+                             
                              'trsv'=c(sample0$trsv ,sample.5$trsv,sample1$trsv, sample1.5$trsv, sample2$trsv)
-                            
-                             )
-View(full_population)
-
-
-dropped = full_population[full_population$slope/full_population$sd >= 1,]
-
-highvar = dropped[dropped$var_color == "highvar",]
-highvar = highvar[highvar$trsv==0,]
-length(rownames(highvar))
-
-lowvar = dropped[dropped$var_color == "lowvar",]
-lowvar = highvar[lowvar$trsv==0,]
-length(rownames(lowvar))
-
-
-
-ggplot(dropped, aes(x = trsv)) +  
-  geom_bar(aes(y = (..count..)/200)) + 
-  theme_classic()+
-  scale_y_continuous(labels=percent)+
-  xlab("True S/V") +
-  ylab("Percent Kept") +
-  theme(axis.title.x = element_text(size=20),
-        axis.title.y = element_text(size=20),
-        axis.text.x = element_text(face="bold",
-                                   size=14),
-        axis.text.y = element_text(face="bold",
-                                   size=14))
-
-
-ggplot(dropped, aes(x = trsv_plotting)) +  
-  geom_bar(aes(y = (..count..)/200)) + 
-  theme_classic()+
-  scale_y_continuous(labels=percent)+
-  xlab("True S/V") +
-  ylab("Percent Kept") +
-  theme(axis.title.x = element_text(size=20),
-        axis.title.y = element_text(size=20),
-        axis.text.x = element_text(face="bold",
-                                   size=14),
-        axis.text.y = element_text(face="bold",
-                                   size=14))
-
-
+                             
+)
 
 write.csv(full_population, "data/Fig4/fig4B")
 
-
-#OLD STUFF
-#####How many proteins will I lose?####
-#generate population
-# pop0_highvar = generate_data(slope=0, sd = 1, population_size = 10000) #sv = 0
-# pop0_lowvar = generate_data(slope=0, sd = .5, population_size = 10000) #sv = 0
-# pop.5_highvar = generate_data(slope=.5, sd = 1, population_size = 10000) #sv = .5
-# pop.5_lowvar = generate_data(slope=.25, sd = .5, population_size = 10000) #sv = .5
-# pop1_highvar = generate_data(slope=1, sd = 1, population_size = 10000) #sv = 1
-# pop1_lowvar = generate_data(slope=.5, sd = .5, population_size = 10000) #sv = 1
-# pop1.5_highvar = generate_data(slope=1.5, sd = 1, population_size = 10000) #sv = 1.5
-# pop1.5_lowvar = generate_data(slope=.75, sd = .5, population_size = 10000) #sv = 1.5
-# pop2_highvar = generate_data(slope=2, sd = 1, population_size = 10000) #sv = 2
-# pop2_lowvar = generate_data(slope=1, sd = .5, population_size = 10000) #sv = 2
-
-
-# sample0_highvar = find_for_sample(pop0_highvar, 0)
-# sample0_lowvar = find_for_sample(pop0_lowvar, 0)
-# sample.5_highvar = find_for_sample(pop.5_highvar, .5)
-# sample.5_lowvar = find_for_sample(pop.5_lowvar, .5)
-# sample1_highvar = find_for_sample(pop1_highvar, 1)
-# sample1_lowvar = find_for_sample(pop1_lowvar, 1)
-# sample1.5_highvar = find_for_sample(pop1.5_highvar, 1.5)
-# sample1.5_lowvar = find_for_sample(pop1.5_lowvar, 1.5)
-# sample2_highvar = find_for_sample(pop2_highvar, 2)
-# sample2_lowvar = find_for_sample(pop2_lowvar, 2)
-
-# full_population = data.frame("sd"=c(sample0_lowvar$sd,sample0_highvar$sd, 
-#                                     sample.5_lowvar$sd, sample.5_highvar$sd, 
-#                                     sample1_lowvar$sd, sample1_highvar$sd, 
-#                                     sample1.5_lowvar$sd, sample1.5_highvar$sd, 
-#                                     sample2_lowvar$sd, sample2_highvar$sd),
-#                              
-#                              'slope'=c(sample0_lowvar$slope,sample0_highvar$slope,
-#                                        sample.5_lowvar$slope, sample.5_highvar$slope, 
-#                                        sample1_lowvar$slope,sample1_highvar$slope, 
-#                                        sample1.5_lowvar$slope, sample1.5_highvar$slope, 
-#                                        sample2_lowvar$slope, sample2_highvar$slope),
-#                              
-#                              'trsv'=c(sample0_lowvar$trsv,sample0_highvar$trsv, 
-#                                       sample.5_lowvar$trsv, sample.5_highvar$trsv, 
-#                                       sample1_lowvar$trsv, sample1_highvar$trsv, 
-#                                       sample1.5_lowvar$trsv, sample1.5_highvar$trsv, 
-#                                       sample2_lowvar$trsv, sample2_highvar$trsv),
-#                              
-#                              'color' = c("low_var", "highvar"))
-
-#FIGURE A
-# cells100_highvar = approx_sv(slope = 1, sd = 1, 5000)
-# cells100_diff = c(1-cells100_lowvar, 1-cells100_highvar)
-# 
-# cells30_lowvar = approx_sv(slope = .5, sd = .5, 30)
-# cells30_highvar = approx_sv(slope = 1, sd = 1, 30)
-# cells30_diff = c(1-cells30_lowvar, 1-cells30_highvar)
-# 
-# cells20_lowvar = approx_sv(slope = .5, sd = .5, 20)
-# cells20_highvar = approx_sv(slope = 1, sd = 1, 20)
-# cells20_diff = c(1-cells20_lowvar, 1-cells20_highvar)
-# 
-# cells16_lowvar = approx_sv(slope = .5, sd = .5, 16)
-# cells16_highvar = approx_sv(slope = 1, sd = 1, 16)
-# cells16_diff = c(1-cells16_lowvar, 1-cells16_highvar)
-# 
-# cells7_lowvar = approx_sv(slope = .5, sd = .5, 7)
-# cells7_highvar = approx_sv(slope = 1, sd = 1, 7)
-# cells7_diff = c(1-cells7_lowvar, 1-cells7_highvar)
-# 
-# 
-# myData = data.frame(c100 = cells100_diff,
-#                     c30 = cells30_diff,
-#                     c20 = cells20_diff,
-#                     c16 = cells16_diff,
-#                     c7 = cells7_diff)

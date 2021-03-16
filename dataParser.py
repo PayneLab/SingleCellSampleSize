@@ -86,6 +86,33 @@ def find_mean_fig3(slope_df, cells, slope_over_var):
     row = [mean, dev, cells, slope_over_var]
     df.loc[len(df)] = row
     return(df)
+def get_rep(sv, FP=False):
+    if FP==True:
+        rep1 = pd.read_csv("data/Fig3B/"+sv+"/rep1")
+        rep2 = pd.read_csv("data/Fig3B/"+sv+"/rep2")
+        rep3 = pd.read_csv("data/Fig3B/"+sv+"/rep3")
+        rep4 = pd.read_csv("data/Fig3B/"+sv+"/rep4")
+        rep5 = pd.read_csv("data/Fig3B/"+sv+"/rep5")
+        rep6 = pd.read_csv("data/Fig3B/"+sv+"/rep6")
+        rep7 = pd.read_csv("data/Fig3B/"+sv+"/rep7")
+        rep8 = pd.read_csv("data/Fig3B/"+sv+"/rep8")
+        rep9 = pd.read_csv("data/Fig3B/"+sv+"/rep9")
+        rep10 = pd.read_csv("data/Fig3B/"+sv+"/rep10")
+    else:
+        rep1 = pd.read_csv("data/Fig3A/"+sv+"/rep1")
+        rep2 = pd.read_csv("data/Fig3A/"+sv+"/rep2")
+        rep3 = pd.read_csv("data/Fig3A/"+sv+"/rep3")
+        rep4 = pd.read_csv("data/Fig3A/"+sv+"/rep4")
+        rep5 = pd.read_csv("data/Fig3A/"+sv+"/rep5")
+        rep6 = pd.read_csv("data/Fig3A/"+sv+"/rep6")
+        rep7 = pd.read_csv("data/Fig3A/"+sv+"/rep7")
+        rep8 = pd.read_csv("data/Fig3A/"+sv+"/rep8")
+        rep9 = pd.read_csv("data/Fig3A/"+sv+"/rep9")
+        rep10 = pd.read_csv("data/Fig3A/"+sv+"/rep10")
+
+    all_reps_0p5 = pd.concat([rep1, rep2, rep3, rep4, rep5, rep6,
+                              rep7,  rep8,  rep9,  rep10])
+    return(all_reps_0p5)
 def wrap_ttest(df, label_column, comparison_columns=None, alpha=.05, equal_var=True, return_all=False, correction_method='bonferroni', mincount=3, pval_return_corrected=True):
     try:
         '''Verify precondition that label column exists and has exactly 2 unique values'''
@@ -172,6 +199,13 @@ def wrap_ttest(df, label_column, comparison_columns=None, alpha=.05, equal_var=T
         print("Incorrectly Formatted Dataframe!")
         return None
 
+#Functions for supplemental fig 3
+def make_sv_col(row):
+    slope = row["slope"]
+    dev = row["deviation"]
+    sv = str(slope)+"/"+str(dev)
+    return sv
+
 def parse_fig1(slope):
     if slope==0.5:
         file_name = "slope0p5"
@@ -241,26 +275,29 @@ def parse_fig3A(cells):
         print("Enter a valid cell number")
         return
 
-    sv_0p5 = pd.read_csv("data/Fig3A/slope_var_0p5")
-    sv_1 = pd.read_csv("data/Fig3A/slope_var_1")
-    sv_1p5 = pd.read_csv("data/Fig3A/slope_var_1p5")
-    sv_2 = pd.read_csv("data/Fig3A/slope_var_2")
-    sv_3 = pd.read_csv("data/Fig3A/slope_var_3")
-    sv_4 = pd.read_csv("data/Fig3A/slope_var_4")
-    sv_6 = pd.read_csv("data/Fig3A/slope_var_6")
-    sv_10 = pd.read_csv("data/Fig3A/slope_var_10")
+    slope_var_0p5 = get_rep("slope_var_0p5")
+    slope_var_0p5 = find_mean_fig3(slope_var_0p5, cells, slope_over_var=.5)
 
-    slope_var_0p5 = find_mean_fig3(sv_0p5, cells, slope_over_var=.5)
-    slope_var_1 = find_mean_fig3(sv_1, cells, slope_over_var=1)
-    slope_var_1p5 = find_mean_fig3(sv_1p5, cells, slope_over_var=1.5)
-    slope_var_2 = find_mean_fig3(sv_2, cells, slope_over_var=2)
-    slope_var_3 = find_mean_fig3(sv_3, cells, slope_over_var=3)
-    slope_var_4 = find_mean_fig3(sv_4, cells, slope_over_var=4)
-    slope_var_6 = find_mean_fig3(sv_6, cells, slope_over_var=6)
-    # slope_var_10 = find_mean_fig3(sv_10, cells, slope_over_var=10)
+    slope_var_1 = get_rep("slope_var_1")
+    slope_var_1 = find_mean_fig3(slope_var_1, cells, slope_over_var=1)
+
+    slope_var_1p5 = get_rep("slope_var_1p5")
+    slope_var_1p5 = find_mean_fig3(slope_var_1p5, cells, slope_over_var=1.5)
+
+    slope_var_2 = get_rep("slope_var_2")
+    slope_var_2 = find_mean_fig3(slope_var_2, cells, slope_over_var=2)
+
+    slope_var_3 = get_rep("slope_var_3")
+    slope_var_3 = find_mean_fig3(slope_var_3, cells, slope_over_var=3)
+
+    slope_var_4 = get_rep("slope_var_4")
+    slope_var_4 = find_mean_fig3(slope_var_4, cells, slope_over_var=4)
+
+    slope_var_6 = get_rep("slope_var_6")
+    slope_var_6 = find_mean_fig3(slope_var_6, cells, slope_over_var=6)
 
     df = pd.concat([slope_var_0p5,slope_var_1,slope_var_1p5,slope_var_2,slope_var_3,
-                         slope_var_4, slope_var_6])
+                             slope_var_4, slope_var_6])
     df.reset_index(drop=True, inplace=True)
     return(df)
 
@@ -269,28 +306,31 @@ def parse_fig3B(cells):
         print("Enter a valid cell number")
         return
 
-    sv_0p5 = pd.read_csv("data/Fig3B/slope_var_0p5")
-    sv_1 = pd.read_csv("data/Fig3B/slope_var_1")
-    sv_1p5 = pd.read_csv("data/Fig3B/slope_var_1p5")
-    sv_2 = pd.read_csv("data/Fig3B/slope_var_2")
-    sv_3 = pd.read_csv("data/Fig3B/slope_var_3")
-    sv_4 = pd.read_csv("data/Fig3B/slope_var_4")
-    sv_6 = pd.read_csv("data/Fig3B/slope_var_6")
-    sv_10 = pd.read_csv("data/Fig3B/slope_var_10")
+    slope_var_0p5 = get_rep("slope_var_0p5", FP=True)
+    slope_var_0p5 = find_mean_fig3(slope_var_0p5, cells, slope_over_var=.5)
 
-    slope_var_0p5 = find_mean_fig3(sv_0p5, cells, slope_over_var=.5)
-    slope_var_1 = find_mean_fig3(sv_1, cells, slope_over_var=1)
-    slope_var_1p5 = find_mean_fig3(sv_1p5, cells, slope_over_var=1.5)
-    slope_var_2 = find_mean_fig3(sv_2, cells, slope_over_var=2)
-    slope_var_3 = find_mean_fig3(sv_3, cells, slope_over_var=3)
-    slope_var_4 = find_mean_fig3(sv_4, cells, slope_over_var=4)
-    slope_var_6 = find_mean_fig3(sv_6, cells, slope_over_var=6)
-    # slope_var_10 = find_mean_fig3(sv_10, cells, slope_over_var=10)
+    slope_var_1 = get_rep("slope_var_1", FP=True)
+    slope_var_1 = find_mean_fig3(slope_var_1, cells, slope_over_var=1)
 
-    df = pd.concat([slope_var_0p5,slope_var_1,slope_var_1p5,slope_var_2,slope_var_3,slope_var_4, slope_var_6])
+    slope_var_1p5 = get_rep("slope_var_1p5", FP=True)
+    slope_var_1p5 = find_mean_fig3(slope_var_1p5, cells, slope_over_var=1.5)
+
+    slope_var_2 = get_rep("slope_var_2", FP=True)
+    slope_var_2 = find_mean_fig3(slope_var_2, cells, slope_over_var=2)
+
+    slope_var_3 = get_rep("slope_var_3", FP=True)
+    slope_var_3 = find_mean_fig3(slope_var_3, cells, slope_over_var=3)
+
+    slope_var_4 = get_rep("slope_var_4", FP=True)
+    slope_var_4 = find_mean_fig3(slope_var_4, cells, slope_over_var=4)
+
+    slope_var_6 = get_rep("slope_var_6", FP=True)
+    slope_var_6 = find_mean_fig3(slope_var_6, cells, slope_over_var=6)
+
+    df = pd.concat([slope_var_0p5,slope_var_1,slope_var_1p5,slope_var_2,slope_var_3,
+                             slope_var_4, slope_var_6])
     df.reset_index(drop=True, inplace=True)
     return(df)
-
 
 def parse_supplemtal2():
     df = pd.read_csv("data/SupFig2/LungMap72Cell.txt", sep="\t", index_col="Uniprot_ID")
@@ -332,3 +372,10 @@ def parse_supplemtal2():
     final_df = pd.concat([test_df, df_plot],axis=1, join='inner')
 
     return(final_df)
+
+def prase_supplemtal3(cells, sv):
+    all_reps = get_rep(sv)
+
+    all_reps["sv"] = all_reps.apply(lambda row: make_sv_col(row), axis=1)
+    cell_number = all_reps[all_reps["cells"]==cells]
+    return(cell_number)

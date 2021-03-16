@@ -16,7 +16,7 @@ plot_func = function(slope){
         ylim=c(0,0.5)
         title = paste("Slope = ", toString(slope))
         plot(cells_7$deviation, cells_7$mean_accuracy, main=title,
-             xlab="Variation ", ylab="% False Positve ", pch=19, type="o",
+             xlab="Variation ", ylab="False Positve ", pch=19, type="o",
              ylim=ylim, lty=1,
              cex.lab=2,cex.axis=1.5,cex.main=2,
              lwd = 3) 

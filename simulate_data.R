@@ -4,7 +4,7 @@ library(geiger)
 library(sp)
 library(rgeos)
 
-generate_data = function(slope, sd, population_size=1000){
+generate_data = function(slope, sd, population_size=10000){
 "
 Generates a population of data that has specified slope and deviation. The Y intercept is set to 1. 
 It also generates a population of data to be used for showing no increase expression (a flat line). 
@@ -224,7 +224,7 @@ accuracy_perc = function(oracle_area_list, flat_area_list){
   accuracy = pos/length(difference)
   return(accuracy)
 }
-simulate = function(slope, sd, number_of_cells, number_of_subsamples=1000, population_size=1000){
+simulate = function(slope, sd, number_of_cells, number_of_subsamples=1000, population_size=10000){
 '
 Generates data population with given slope, sd. 
 It draws a given number of subsamples from that population and (for each) finds the area between the sample and oracle, and the sample and flat line.
@@ -252,7 +252,7 @@ Return:
   perc_accuracy = accuracy_perc(oracle_area_list=sample_vs_oracle_list, flat_area_list=sample_vs_flat_list)
   return(perc_accuracy)
 }
-simulate_false_positives = function(slope, sd, number_of_cells, number_of_subsamples=1000, population_size=1000){
+simulate_false_positives = function(slope, sd, number_of_cells, number_of_subsamples=1000, population_size=10000){
   '
 Return the percent of sample incorrectly classified as having a trend (false positive)
 
@@ -307,64 +307,67 @@ Return the percent of sample incorrectly classified as having a trend (false pos
   return(perc_classified_as_pos)
 }
 
-
+#Functions for figure 1
 simulate_fig_1_sd = function(slope, number_of_cells, population_size){
-  sd0 = simulate(slope=slope, sd=0, number_of_cells = number_of_cells, population_size=population_size)
-  sd0p25 = simulate(slope=slope, sd=.25, number_of_cells = number_of_cells, population_size=population_size)
-  sd0p5 = simulate(slope=slope, sd=.5, number_of_cells = number_of_cells, population_size=population_size)
-  sd0p7 = simulate(slope=slope, sd=.7, number_of_cells = number_of_cells, population_size=population_size)
-  sd1 = simulate(slope=slope, sd=1, number_of_cells = number_of_cells)
+  sd0 = simulate(slope=slope, sd=0, number_of_cells = number_of_cells, population_size=10000)
+  sd0p25 = simulate(slope=slope, sd=.25, number_of_cells = number_of_cells, population_size=10000)
+  sd0p5 = simulate(slope=slope, sd=.5, number_of_cells = number_of_cells, population_size=10000)
+  sd0p7 = simulate(slope=slope, sd=.7, number_of_cells = number_of_cells, population_size=10000)
+  sd1 = simulate(slope=slope, sd=1, number_of_cells = number_of_cells, population_size=10000)
   df = data.frame("accuracy"=c(sd0, sd0p25, sd0p5, sd0p7, sd1), "deviation"=c(0, .25, .5,.7,1), "slope"=c(slope), "cells"=c(number_of_cells))
   return(df)
 }
 simulate_fig_1_cells = function(slope){
-  cells_7 = simulate_fig_1_sd(slope= slope, number_of_cells = 7, population_size=1000)
-  cells_16 = simulate_fig_1_sd(slope= slope, number_of_cells = 16, population_size=1000)
-  cells_20 = simulate_fig_1_sd(slope= slope, number_of_cells = 20, population_size=1000)
-  cells_30 = simulate_fig_1_sd(slope= slope, number_of_cells = 30, population_size=1000)
-  cells_100 = simulate_fig_1_sd(slope= slope, number_of_cells = 100, population_size=100000)
+  cells_7 = simulate_fig_1_sd(slope= slope, number_of_cells = 7, population_size=10000)
+  cells_16 = simulate_fig_1_sd(slope= slope, number_of_cells = 16, population_size=10000)
+  cells_20 = simulate_fig_1_sd(slope= slope, number_of_cells = 20, population_size=10000)
+  cells_30 = simulate_fig_1_sd(slope= slope, number_of_cells = 30, population_size=10000)
+  cells_100 = simulate_fig_1_sd(slope= slope, number_of_cells = 100, population_size=10000)
   all_df = do.call("rbind", list(cells_7, cells_16, cells_20, cells_30, cells_100))
   return(all_df)
   
 }
-simulate_fig1_FP_sd = function(slope, number_of_cells, population_size){
-  sd0 = simulate_false_positives(slope=slope, sd=0, number_of_cells = number_of_cells, population_size=population_size)
-  sd0p25 = simulate_false_positives(slope=slope, sd=.25, number_of_cells = number_of_cells, population_size=population_size)
-  sd0p5 = simulate_false_positives(slope=slope, sd=.5, number_of_cells = number_of_cells, population_size=population_size)
-  sd0p7 = simulate_false_positives(slope=slope, sd=.7, number_of_cells = number_of_cells, population_size=population_size)
-  sd1 = simulate_false_positives(slope=slope, sd=1, number_of_cells = number_of_cells)
+#Functions for figure 2
+simulate_fig2_FP_sd = function(slope, number_of_cells, population_size){
+  sd0 = simulate_false_positives(slope=slope, sd=0, number_of_cells = number_of_cells, population_size=10000)
+  sd0p25 = simulate_false_positives(slope=slope, sd=.25, number_of_cells = number_of_cells, population_size=10000)
+  sd0p5 = simulate_false_positives(slope=slope, sd=.5, number_of_cells = number_of_cells, population_size=10000)
+  sd0p7 = simulate_false_positives(slope=slope, sd=.7, number_of_cells = number_of_cells, population_size=10000)
+  sd1 = simulate_false_positives(slope=slope, sd=1, number_of_cells = number_of_cells, population_size=10000)
   df = data.frame("accuracy"=c(sd0, sd0p25, sd0p5, sd0p7, sd1), "deviation"=c(0, .25, .5,.7,1), "slope"=c(slope), "cells"=c(number_of_cells))
   return(df)
 }
-simulate_fig1_FP_cells = function(slope){
-  cells_7 = simulate_fig1_FP_sd(slope= slope, number_of_cells = 7, population_size=1000)
-  cells_16 = simulate_fig1_FP_sd(slope= slope, number_of_cells = 16, population_size=1000)
-  cells_20 = simulate_fig1_FP_sd(slope= slope, number_of_cells = 20, population_size=1000)
-  cells_30 = simulate_fig1_FP_sd(slope= slope, number_of_cells = 30, population_size=1000)
-  cells_100 = simulate_fig1_FP_sd(slope= slope, number_of_cells = 100, population_size=100000)
+simulate_fig2_FP_cells = function(slope){
+  cells_7 = simulate_fig2_FP_sd(slope= slope, number_of_cells = 7, population_size=10000)
+  cells_16 = simulate_fig2_FP_sd(slope= slope, number_of_cells = 16, population_size=10000)
+  cells_20 = simulate_fig2_FP_sd(slope= slope, number_of_cells = 20, population_size=10000)
+  cells_30 = simulate_fig2_FP_sd(slope= slope, number_of_cells = 30, population_size=10000)
+  cells_100 = simulate_fig2_FP_sd(slope= slope, number_of_cells = 100, population_size=10000)
   all_df = do.call("rbind", list(cells_7, cells_16, cells_20, cells_30, cells_100))
   return(all_df)
   
 }
-
-simulate_fig2_FP_cells = function(slope, sd){
-  cells_7 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=7, number_of_subsamples=1000)
-  cells_16 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=16, number_of_subsamples=1000)
-  cells_20 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=20, number_of_subsamples=1000)
-  cells_30 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=30, number_of_subsamples=1000)
-  cells_100 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=100, number_of_subsamples=1000, population_size = 10000)
-  all_cells = data.frame("accuracy"=c(cells_7, cells_16, cells_20, cells_30, cells_100), "deviation"=c(sd), "slope"=c(slope), "cells"=c(7,16,20,30,100))
-  return(all_cells)
-}
-simulate_fig2_cells = function(slope, sd){
-  cells_7 = simulate(sd=sd, slope=slope, number_of_cells=7, number_of_subsamples=1000)
-  cells_16 = simulate(sd=sd, slope=slope, number_of_cells=16, number_of_subsamples=1000)
-  cells_20 = simulate(sd=sd, slope=slope, number_of_cells=20, number_of_subsamples=1000)
-  cells_30 = simulate(sd=sd, slope=slope, number_of_cells=30, number_of_subsamples=1000)
+#Functions for figure 3A
+simulate_fig3_cells = function(slope, sd){
+  cells_7 = simulate(sd=sd, slope=slope, number_of_cells=7, number_of_subsamples=1000, population_size=10000) #changed
+  cells_16 = simulate(sd=sd, slope=slope, number_of_cells=16, number_of_subsamples=1000, population_size=10000)#changed
+  cells_20 = simulate(sd=sd, slope=slope, number_of_cells=20, number_of_subsamples=1000, population_size=10000)#changed
+  cells_30 = simulate(sd=sd, slope=slope, number_of_cells=30, number_of_subsamples=1000, population_size=10000)#changed
   cells_100 = simulate(sd=sd, slope=slope, number_of_cells=100, number_of_subsamples=1000, population_size = 10000)
   all_cells = data.frame("accuracy"=c(cells_7, cells_16, cells_20, cells_30, cells_100), "deviation"=c(sd), "slope"=c(slope), "cells"=c(7,16,20,30,100))
   return(all_cells)
 }
+#Functions for figure 3B
+simulate_fig3_FP_cells = function(slope, sd){
+  cells_7 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=7, number_of_subsamples=1000, population_size = 10000)
+  cells_16 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=16, number_of_subsamples=1000, population_size = 10000)
+  cells_20 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=20, number_of_subsamples=1000, population_size = 10000)
+  cells_30 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=30, number_of_subsamples=1000, population_size = 10000)
+  cells_100 = simulate_false_positives(sd=sd, slope=slope, number_of_cells=100, number_of_subsamples=1000, population_size = 10000)
+  all_cells = data.frame("accuracy"=c(cells_7, cells_16, cells_20, cells_30, cells_100), "deviation"=c(sd), "slope"=c(slope), "cells"=c(7,16,20,30,100))
+  return(all_cells)
+}
+
 
 ####Generate Figure 1####
 #For 10 reps, you'd do this 10 times
@@ -477,237 +480,285 @@ write.csv(slope4, "data/Fig1/rep10/slope4")
 dir.create("data/Fig2")
 
 dir.create("data/Fig2/rep1")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep1/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep1/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep1/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep1/slope4")
 
 dir.create("data/Fig2/rep2")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep2/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep2/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep2/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep2/slope4")
 
 dir.create("data/Fig2/rep3")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/generated_data2/fig1_FP/rep3/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep3/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep3/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep3/slope4")
 
 dir.create("data/Fig2/rep4")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep4/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep4/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep4/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep4/slope4")
 
 dir.create("data/Fig2/rep5")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep5/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep5/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep5/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep5/slope4")
 
 dir.create("data/Fig2/rep6")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep6/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep6/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep6/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep6/slope4")
 
 dir.create("data/Fig2/rep7")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep7/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep7/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep7/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep7/slope4")
 
 dir.create("data/Fig2/rep8")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep8/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep8/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep8/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep8/slope4")
 
 dir.create("data/Fig2/rep9")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep9/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep9/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep9/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep9/slope4")
 
 dir.create("data/Fig2/rep10")
-slope0p5 = simulate_fig1_FP_cells(slope=.5)
+slope0p5 = simulate_fig2_FP_cells(slope=.5)
 write.csv(slope0p5, "data/Fig2/rep10/slope0p5")
-slope1 = simulate_fig1_FP_cells(slope=1)
+slope1 = simulate_fig2_FP_cells(slope=1)
 write.csv(slope1, "data/Fig2/rep10/slope1")
-slope2 = simulate_fig1_FP_cells(slope=2)
+slope2 = simulate_fig2_FP_cells(slope=2)
 write.csv(slope2, "data/Fig2/rep10/slope2")
-slope4 = simulate_fig1_FP_cells(slope=4)
+slope4 = simulate_fig2_FP_cells(slope=4)
 write.csv(slope4, "data/Fig2/rep10/slope4")
 
-####Generate Figure 3B (False Positives)####
-##slope/var = .5:  .25/.5    .5/1    1.5/3   2/4   3/6 ###Each one takes like 35 minutes
-dir.create("data/Fig3B")
-combo_1 = simulate_fig2_FP_cells(slope = .25, sd=.5) 
-combo2 = simulate_fig2_FP_cells(slope = .5, sd=1)
-combo3 = simulate_fig2_FP_cells(slope = 1.5, sd=3)
-combo4 = simulate_fig2_FP_cells(slope = 2, sd=4)
-combo5 = simulate_fig2_FP_cells(slope = 3, sd=6)
-combo6
-slope_var_0p5 = do.call("rbind", list(combo_1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_0p5, "data/Fig3B/slope_var_0p5")
-
-
-##slope/var = 1:  .25/.25    .5/.5    1/1    2/2   3/3
-combo_1 = simulate_fig2_FP_cells(slope = .25, sd=.25)
-combo2 = simulate_fig2_FP_cells(slope = .5, sd=.5)
-combo3 = simulate_fig2_FP_cells(slope = 1, sd=1)
-combo4 = simulate_fig2_FP_cells(slope = 2, sd=2)
-combo5 = simulate_fig2_FP_cells(slope = 3, sd=3)
-slope_var_1 = do.call("rbind", list(combo_1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_1, "data/Fig3B/slope_var_1")
-
-##slope/var = 2:  .5/.25    1/.5    2/1    4/2   6/3
-combo_1 = simulate_fig2_FP_cells(slope = .5, sd=.25)
-combo2 = simulate_fig2_FP_cells(slope = 1, sd=.5)
-combo3 = simulate_fig2_FP_cells(slope = 2, sd=1)
-combo4 = simulate_fig2_FP_cells(slope = 4, sd=2)
-combo5 = simulate_fig2_FP_cells(slope = 6, sd=3)
-slope_var_2 = do.call("rbind", list(combo_1,combo2,combo_3,combo_4,combo_5))
-write.csv(slope_var_2, "data/Fig3B/slope_var_2")
-
-##slope/var = 4:  # 2/.5    3/.75   4/1   8/2   12/3
-combo_1 = simulate_fig2_FP_cells(slope = 2, sd=.5)
-combo2 = simulate_fig2_FP_cells(slope = 3, sd=.75)
-combo3 = simulate_fig2_FP_cells(slope = 4, sd=1)
-combo4 = simulate_fig2_FP_cells(slope = 8, sd=2)
-combo5 = simulate_fig2_FP_cells(slope = 12, sd=3)
-slope_var_4 = do.call("rbind", list(combo_1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_4, "data/Fig3B/slope_var_4")
-
-##slope/var = 6:   3/.5    4.5/.75   6/1   12/2  18/3
-combo_1 = simulate_fig2_FP_cells(slope = 3, sd=.5)
-combo2 = simulate_fig2_FP_cells(slope = 4.5, sd=.75)
-combo3 = simulate_fig2_FP_cells(slope = 6, sd=1)
-combo4 = simulate_fig2_FP_cells(slope = 12, sd=2)
-combo5 = simulate_fig2_FP_cells(slope = 18, sd=3)
-slope_var_6 = do.call("rbind", list(combo_1,combo2,combo_3,combo_4,combo_5))
-write.csv(slope_var_6, "data/Fig3B/slope_var_6")
-
-##slope/var = 10:   5/.5    7.5/.75   10/1  20/2   30/3
-combo_1 = simulate_fig2_FP_cells(slope = 5, sd=.5)
-combo2 = simulate_fig2_FP_cells(slope = 7.5, sd=.75)
-combo3 = simulate_fig2_FP_cells(slope = 10, sd=1)
-combo4 = simulate_fig2_FP_cells(slope = 20, sd=2)
-combo5 = simulate_fig2_FP_cells(slope = 30, sd=3)
-slope_var_10 = do.call("rbind", list(combo_1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_10, "data/Fig3B/slope_var_10")
-
 ####Generate Figure 3A####
-#slope_over_var=.5 ::  .5/1   .75/1.5  1/2  1.5/3   2/4   3/6
-combo1 = simulate_fig2_cells(slope=.5, sd=1)
-combo2 = simulate_fig2_cells(slope=.75, sd=1.5)
-combo3 = simulate_fig2_cells(slope=1, sd=2)
-combo4 = simulate_fig2_cells(slope=2, sd=4)
-combo5 = simulate_fig2_cells(slope=3, sd=6)
-slope_var_0p5 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
 dir.create("data/Fig3A")
-write.csv(slope_var_0p5, "data/Fig3A/slope_var_0p5")
-
+#slope_over_var=.5 ::  .5/1   .75/1.5  1/2  1.5/3   2/4   3/6
+dir.create("data/Fig3A/slope_var_0p5")
+  for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=.5, sd=1)
+  combo2 = simulate_fig3_cells(slope=.75, sd=1.5)
+  combo3 = simulate_fig3_cells(slope=1, sd=2)
+  combo4 = simulate_fig3_cells(slope=2, sd=4)
+  combo5 = simulate_fig3_cells(slope=3, sd=6)
+  slope_var_0p5 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_0p5", "/rep", i, sep=""))
+  write.csv(slope_var_0p5, "data/Fig3A/slope_var_0p5")
+}
 
 #slope_var = 1 ::   .5/.5  1/1  1.75/1.75  2/2   3/3
-combo1 = simulate_fig2_cells(slope=.5, sd=.5)
-combo2 = simulate_fig2_cells(slope=1, sd=1)
-combo3 = simulate_fig2_cells(slope=1.75, sd=1.75)
-combo4 = simulate_fig2_cells(slope=2, sd=2)
-combo5 = simulate_fig2_cells(slope=3, sd=3)
-slope_var_1 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_1, "data/Fig3A/slope_var_1")
-
+dir.create("data/Fig3A/slope_var_1")
+  for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=.5, sd=.5)
+  combo2 = simulate_fig3_cells(slope=1, sd=1)
+  combo3 = simulate_fig3_cells(slope=1.75, sd=1.75)
+  combo4 = simulate_fig3_cells(slope=2, sd=2)
+  combo5 = simulate_fig3_cells(slope=3, sd=3)
+  slope_var_1 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_1", "/rep", i, sep=""))
+  write.csv(slope_var_1, file_path)
+}
 
 #Slope over Var 1.5 ::  # .75/.5  2.25/1.5  1.5/1   3/2   4.5/3  
-combo1 = simulate_fig2_cells(slope=.75, sd=.5)
-combo2 = simulate_fig2_cells(slope=2.25, sd=1.5)
-combo3 = simulate_fig2_cells(slope=1.5, sd=1)
-combo4 = simulate_fig2_cells(slope=3, sd=2)
-combo5 = simulate_fig2_cells(slope=4.5, sd=3)
-slope_var_1p5 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_1p5, "data/Fig3A/slope_var_1p5")
+dir.create("data/Fig3A/slope_var_1p5")
+for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=.75, sd=.5)
+  combo2 = simulate_fig3_cells(slope=2.25, sd=1.5)
+  combo3 = simulate_fig3_cells(slope=1.5, sd=1)
+  combo4 = simulate_fig3_cells(slope=3, sd=2)
+  combo5 = simulate_fig3_cells(slope=4.5, sd=3)
+  slope_var_1p5 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_1p5", "/rep", i, sep=""))=
+  write.csv(slope_var_1p5, file_path)
+}
 
 #Slope over var = 2 ::     1/.5    1.5/.75   2/1   4/2   6/3
-combo1 = simulate_fig2_cells(slope=1, sd=.5)
-combo2 = simulate_fig2_cells(slope=1.5, sd=.75)
-combo3 = simulate_fig2_cells(slope=2, sd=1)
-combo4 = simulate_fig2_cells(slope=4, sd=2)
-combo5 = simulate_fig2_cells(slope=6, sd=3)
-slope_var_2 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_2, "data/Fig3A/slope_var_2")
-
+dir.create("data/Fig3A/slope_var_2")
+for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=1, sd=.5)
+  combo2 = simulate_fig3_cells(slope=1.5, sd=.75)
+  combo3 = simulate_fig3_cells(slope=2, sd=1)
+  combo4 = simulate_fig3_cells(slope=4, sd=2)
+  combo5 = simulate_fig3_cells(slope=6, sd=3)
+  slope_var_2 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_2", "/rep", i, sep=""))=
+  write.csv(slope_var_2, file_path)
+}
 #Slope over var = 3 ::     1.5/.5   2.25/.75  3/1   6/2   9/3
-combo1 = simulate_fig2_cells(slope=1.5, sd=.5)
-combo2 = simulate_fig2_cells(slope=2.25, sd=.75)
-combo3 = simulate_fig2_cells(slope=3, sd=1)
-combo4 = simulate_fig2_cells(slope=6, sd=2)
-combo5 = simulate_fig2_cells(slope=9, sd=3)
-slope_var_3 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_3, "data/Fig3A/slope_var_3")
-
+dir.create("data/Fig3A/slope_var_3")
+  for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=1.5, sd=.5)
+  combo2 = simulate_fig3_cells(slope=2.25, sd=.75)
+  combo3 = simulate_fig3_cells(slope=3, sd=1)
+  combo4 = simulate_fig3_cells(slope=6, sd=2)
+  combo5 = simulate_fig3_cells(slope=9, sd=3)
+  slope_var_3 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_3", "/rep", i, sep=""))=
+  write.csv(slope_var_3, file_path)
+}
 # Slope over var = 4  ::  # 2/.5    3/.75   4/1   8/2   12/3
-combo1 = simulate_fig2_cells(slope=2, sd=.5)
-combo2 = simulate_fig2_cells(slope=3, sd=.75)
-combo3 = simulate_fig2_cells(slope=4, sd=1)
-combo4 = simulate_fig2_cells(slope=8, sd=2)
-combo5 = simulate_fig2_cells(slope=12, sd=3)
-slope_var_4 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_4, "data/Fig3A/slope_var_4")
+dir.create("data/Fig3A/slope_var_4")
+for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=2, sd=.5)
+  combo2 = simulate_fig3_cells(slope=3, sd=.75)
+  combo3 = simulate_fig3_cells(slope=4, sd=1)
+  combo4 = simulate_fig3_cells(slope=8, sd=2)
+  combo5 = simulate_fig3_cells(slope=12, sd=3)
+  slope_var_4 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_4", "/rep", i, sep=""))=
+  write.csv(slope_var_4, file_path)
+}
 
 #Slope over var = 6 ::    3/.5    4.5/.75   6/1   12/2  18/3
-combo1 = simulate_fig2_cells(slope=3, sd=.5)
-combo2 = simulate_fig2_cells(slope=4.5, sd=.75)
-combo3 = simulate_fig2_cells(slope=6, sd=1)
-combo4 = simulate_fig2_cells(slope=12, sd=2)
-combo5 = simulate_fig2_cells(slope=18, sd=3)
-slope_var_6 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_6, "data/Fig3A/slope_var_6")
-
+dir.create("data/Fig3A/slope_var_6")
+  for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=3, sd=.5)
+  combo2 = simulate_fig3_cells(slope=4.5, sd=.75)
+  combo3 = simulate_fig3_cells(slope=6, sd=1)
+  combo4 = simulate_fig3_cells(slope=12, sd=2)
+  combo5 = simulate_fig3_cells(slope=18, sd=3)
+  slope_var_6 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_6", "/rep", i, sep=""))=
+  write.csv(slope_var_6, file_path)
+}
 
 #Slope over var = 10 ::   5/.5    7.5/.75   10/1  20/2   30/3
-combo1 = simulate_fig2_cells(slope=5, sd=.5)
-combo2 = simulate_fig2_cells(slope=7.5, sd=.75)
-combo3 = simulate_fig2_cells(slope=10, sd=1)
-combo4 = simulate_fig2_cells(slope=20, sd=2)
-combo5 = simulate_fig2_cells(slope=30, sd=3)
-slope_var_10 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
-write.csv(slope_var_10, "data/Fig3A/slope_var_10")
+dir.create("data/Fig3A/slope_var_10")
+  for(i in 1:10){
+  combo1 = simulate_fig3_cells(slope=5, sd=.5)
+  combo2 = simulate_fig3_cells(slope=7.5, sd=.75)
+  combo3 = simulate_fig3_cells(slope=10, sd=1)
+  combo4 = simulate_fig3_cells(slope=20, sd=2)
+  combo5 = simulate_fig3_cells(slope=30, sd=3)
+  slope_var_10 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3A/slope_var_10", "/rep", i, sep=""))
+  write.csv(slope_var_10, file_path)
+}
 
+####Generate Figure 3B (False Positives)####
+dir.create("data/Fig3B")
+##slope/var = .5:  .25/.5    .5/1    1.5/3   2/4   3/6 ###Each one takes like 35 minutes
+dir.create("data/Fig3B/slope_var_0p5")
+for(i in 1:10){
+  combo1 = simulate_fig3_FP_cells(slope=.5, sd=1)
+  combo2 = simulate_fig3_FP_cells(slope=.75, sd=1.5)
+  combo3 = simulate_fig3_FP_cells(slope=1, sd=2)
+  combo4 = simulate_fig3_FP_cells(slope=2, sd=4)
+  combo5 = simulate_fig3_FP_cells(slope=3, sd=6)
+  slope_var_0p5 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3B/slope_var_0p5/", "/rep", i, sep=""))
+  write.csv(slope_var_0p5, file_path)
+}
+
+##slope/var = 1:  .25/.25    .5/.5    1/1    2/2   3/3
+dir.create("data/Fig3B/slope_var_1")
+for(i in 1:10){
+  combo1 = simulate_fig3_FP_cells(slope = .25, sd=.25)
+  combo2 = simulate_fig3_FP_cells(slope = .5, sd=.5)
+  combo3 = simulate_fig3_FP_cells(slope = 1, sd=1)
+  combo4 = simulate_fig3_FP_cells(slope = 2, sd=2)
+  combo5 = simulate_fig3_FP_cells(slope = 3, sd=3)
+  slope_var_1 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3B/slope_var_1/", "/rep", i, sep=""))
+  write.csv(slope_var_1, file_path)
+}
+
+##slope/var = 2:  .5/.25    1/.5    2/1    4/2   6/3
+dir.create("data/Fig3B/slope_var_2")
+for(i in 1:10){
+  combo1 = simulate_fig3_FP_cells(slope = .5, sd=.25)
+  combo2 = simulate_fig3_FP_cells(slope = 1, sd=.5)
+  combo3 = simulate_fig3_FP_cells(slope = 2, sd=1)
+  combo4 = simulate_fig3_FP_cells(slope = 4, sd=2)
+  combo5 = simulate_fig3_FP_cells(slope = 6, sd=3)
+  slope_var_2 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3B/slope_var_2/", "/rep", i, sep=""))
+  write.csv(slope_var_2, file_path)
+}
+
+##slope/var = 4:  # 2/.5    3/.75   4/1   8/2   12/3
+dir.create("data/Fig3B/slope_var_4")
+  for(i in 1:10){
+  combo1 = simulate_fig3_FP_cells(slope = 2, sd=.5)
+  combo2 = simulate_fig3_FP_cells(slope = 3, sd=.75)
+  combo3 = simulate_fig3_FP_cells(slope = 4, sd=1)
+  combo4 = simulate_fig3_FP_cells(slope = 8, sd=2)
+  combo5 = simulate_fig3_FP_cells(slope = 12, sd=3)
+  slope_var_4 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3B/slope_var_4/", "/rep", i, sep=""))
+  write.csv(slope_var_4, file_path)
+}
+
+##slope/var = 6:   3/.5    4.5/.75   6/1   12/2  18/3
+dir.create("data/Fig3B/slope_var_6")
+  for(i in 1:10){
+  combo1 = simulate_fig3_FP_cells(slope = 3, sd=.5)
+  combo2 = simulate_fig3_FP_cells(slope = 4.5, sd=.75)
+  combo3 = simulate_fig3_FP_cells(slope = 6, sd=1)
+  combo4 = simulate_fig3_FP_cells(slope = 12, sd=2)
+  combo5 = simulate_fig3_FP_cells(slope = 18, sd=3)
+  slope_var_6 = do.call("rbind", list(combo1,combo2,combo_3,combo_4,combo_5))
+  file_path = as.character(paste("data/Fig3B/slope_var_6/", "/rep", i, sep=""))
+  write.csv(slope_var_6, file_path)
+  }
+
+##slope/var = 10:   5/.5    7.5/.75   10/1  20/2   30/3
+dir.create("data/Fig3B/slope_var_10")
+  for(i in 1:10){
+  combo1 = simulate_fig3_FP_cells(slope = 5, sd=.5)
+  combo2 = simulate_fig3_FP_cells(slope = 7.5, sd=.75)
+  combo3 = simulate_fig3_FP_cells(slope = 10, sd=1)
+  combo4 = simulate_fig3_FP_cells(slope = 20, sd=2)
+  combo5 = simulate_fig3_FP_cells(slope = 30, sd=3)
+  slope_var_10 = do.call("rbind", list(combo1,combo2,combo3,combo4,combo5))
+  file_path = as.character(paste("data/Fig3B/slope_var_10/", "/rep", i, sep=""))
+  write.csv(slope_var_10, file_path)
+}

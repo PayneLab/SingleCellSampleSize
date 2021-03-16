@@ -15,7 +15,7 @@ jpeg("figures_jpg/fig3A.jpg", units="in", width=8, height=8, res=300)
 par(mar=c(6, 6, 6, 6))
 
 plot(cells_7$slope_over_var, cells_7$mean_accuracy,
-     xlab="Slope Over Variation ", ylab="% Accuracy ", pch=19, type="o",
+     xlab="Slope Over Variation ", ylab="Accuracy ", pch=19, type="o",
      ylim=c(.5,1.0), lty=1, 
      cex.lab=2,cex.axis=1.5,cex.main=2,
      lwd = 3)

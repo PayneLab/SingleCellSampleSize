@@ -13,7 +13,7 @@ dir.create("figures_jpg")
 jpeg("figures_jpg/supFig2.jpg", units="in", width=8, height=8, res=300)
 #Supplemental Figure 2
 sup2_data %>% mutate(Color = ifelse(pval < .05,"red","black")) %>%
-ggplot(aes(x = C10_stdev, y = `abs_C10-SVEC`, color = Color)) +
+  ggplot(aes(x = C10_stdev, y = `abs_C10-SVEC`, color = Color)) +
   geom_point() +
   theme_classic(base_size = 14)+
   scale_color_identity() +
@@ -32,3 +32,13 @@ ggplot(aes(x = C10_stdev, y = `abs_C10-SVEC`, color = Color)) +
   geom_abline(aes(intercept = 0, slope = 4), linetype=3)
 
 dev.off()
+
+
+###Getting the numbers for the manuscript
+sup2_data$sv = sup2_data$`abs_C10-SVEC`/sup2_data$C10_stdev
+sv4 = sup2_data[sup2_data$sv >=4,]
+length(rownames(sv4)) /length(rownames(sup2_data))
+
+sv2 = sup2_data[sup2_data$sv >=2,]
+sv2 = sv2[sv2$sv < 4,]
+length(rownames(sv2)) /length(rownames(sup2_data))
