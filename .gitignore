@@ -4,3 +4,4 @@
 .Rhistory
 figures_tiffs
 figures_tiffs/*
+*/.RData
